@@ -1,0 +1,24 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: 'cimg/openjdk:11.0'
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - mvn-dependencies-{{ checksum "pom.xml" }}
+            - mvn-dependencies
+      - run:
+          name: run the tests and package
+          command: mvn clean package
+      - save_cache:
+          key: mvn-dependencies-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+
+workflows:
+  test:
+    jobs:
+      - test
